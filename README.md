@@ -21,4 +21,12 @@ yarn lint
 ```
 
 ### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+1. Run 
+```
+yarn install
+```
+2. Change influencer address & contract in App.vue
+3. Build
+```
+yarn build
+```
