@@ -12,6 +12,7 @@ module.exports = {
     async load(contract) {
         await this.loadWeb3()
         window.contract = await this.loadContract(contract)
+        return await this.getCurrentAccount()
     },
 
     async loadContract(contract) {
@@ -26,5 +27,10 @@ module.exports = {
     async register(address) {
         const account = await this.getCurrentAccount()
         await window.contract.methods.registerMember(address).send({ from: account })
+    },
+
+    async getInfluencer(account) {
+        const influencer = await window.contract.methods.getInfluencerForMember(account).call()
+        return influencer
     }
 }

@@ -2,20 +2,32 @@
 <script src="./libnosta.min.js" ></script>
 
 <span id="nosta-wallet-status"><b>Metamask: En attente de connexion</b></span><br/>
-<button id="nosta-btn-register">S'inscrire avec cet influenceur</button>
+<button style="display: none;" id="nosta-btn-register">S'inscrire avec cet influenceur</button>
 
 <script>
     ;(async()=>{
+        async function loadAccount(account) {
+            document.querySelector('#nosta-wallet-status').innerHTML = "<b>Metamask connecté</b> <"+account+">"
+            libNosta.setAccount(account)
+            const influencer = await libNosta.getInfluencer()
+            if(influencer === "0x0000000000000000000000000000000000000000") {
+                document.querySelector('#nosta-btn-register').style.display = "block"
+            }
+        }
         const libNosta = new LibNosta({
             contract: "0x6f92b08b24010da5dd0a9c65a536cc8da1c69d1d",
             address: "0x2C3d88B26728b0b975291FF19b6eFAC0388E9fB9"
         })
-        const account = await libNosta.load()
-        if(account) {
-            document.querySelector('#nosta-wallet-status').innerHTML = "<b>Metamask connecté</b> <"+account+">"
-        }
+        window.ethereum.on('accountsChanged', function (accounts) {
+            loadAccount(accounts[0])
+        })
         document.querySelector('#nosta-btn-register').addEventListener('click', async () => {
             await libNosta.register()
         })
+
+        let account = await libNosta.load()
+        if(account) {
+            loadAccount(account)
+        }
     })()
 </script>

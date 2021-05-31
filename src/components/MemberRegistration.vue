@@ -2,7 +2,17 @@
   <div class="hello">
     <h1>{{ influencer }}</h1>
     <h2>{{ address }}</h2>
-    <button @click="register">S'inscrire avec cet influenceur</button>
+    <p>Metamask:
+      <span style="color: red;" v-if="!account">Non connecté</span>
+      <span v-else>{{account}}</span>
+    </p>
+    <div v-if="ready">
+      <button v-if="registrationAvailable" @click="register">S'inscrire avec cet influenceur</button>
+      <span v-else>Already registered with influencer {{registeredInfluencer}}</span>
+    </div>
+    <div v-else>
+      <span>Loading...</span>
+    </div>
   </div>
 </template>
 
@@ -15,14 +25,37 @@ export default {
   props: {
     influencer: String,
     address: String,
-    contract: String
+    contract: String,
+    account: String,
+    registeredInfluencer: String,
+    registrationAvailable: Boolean,
+    ready: Boolean
   },
   async mounted() {
-    await sc.load(this.contract)
+    const account = await sc.load(this.contract)
+    if(account) {
+      this.account = account
+      this.checkInfluencer()
+    }
+    window.ethereum.on('accountsChanged', accounts => {
+      this.account = accounts[0]
+      this.checkInfluencer()
+    })
   },
   methods: {
     register() {
       sc.register(this.address)
+      this.registrationAvailable = false
+    },
+    async checkInfluencer() {
+      const influencer = await sc.getInfluencer(this.account)
+      if(influencer === "0x0000000000000000000000000000000000000000") {
+        this.registrationAvailable = true
+      }else{
+        this.registeredInfluencer = influencer
+        this.registrationAvailable = false
+      }
+      this.ready = true
     }
   }
 }
@@ -35,6 +68,7 @@ h1 {
 }
 
 h2 {
+  font-size: 18px;
   color: white;
 }
 
