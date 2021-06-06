@@ -22,7 +22,12 @@
             loadAccount(accounts[0])
         })
         document.querySelector('#nosta-btn-register').addEventListener('click', async () => {
-            await libNosta.register()
+            const result = await libNosta.register()
+            if(result) {
+                console.log('Successfully registered with influencer')
+            }else{
+                console.log('Error while registering with influencer')
+            }
         })
 
         let account = await libNosta.load()
