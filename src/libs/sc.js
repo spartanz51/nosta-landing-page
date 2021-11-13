@@ -30,7 +30,7 @@ module.exports = {
     },
 
     async getInfluencer(account) {
-        const influencer = await window.contract.methods.getInfluencerForMember(account).call()
+        const influencer = await window.contract.methods.getPartnerForMember(account).call()
         return influencer
     }
 }
